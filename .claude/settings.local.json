@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npx vite:*)",
+      "Bash(npm install:*)",
+      "Read(//c/Users/Admin/Documents/Muka Docs/**)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "WebFetch(domain:medium.com)",
+      "Bash(gh auth:*)"
+    ]
+  }
+}
