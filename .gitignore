@@ -26,5 +26,4 @@ dist-ssr
 
 backup/
 .env
-*.pdf
 test.js
