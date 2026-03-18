@@ -66,6 +66,28 @@
     display: block;
   }
 }
+.nav-cmd-hint {
+  display: none;
+}
+
+.nav-cmd-hint kbd {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(234, 229, 236, 0.35);
+  font-family: "Geist", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-cmd-hint kbd:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: rgba(168, 85, 247, 0.7);
+  background: rgba(168, 85, 247, 0.08);
+}
+
 @media only screen and (min-width: 1200px) {
   .header {
     padding: 35px 0px;
@@ -79,5 +101,8 @@
   }
   .navbar-title {
     font-size: 18px;
+  }
+  .nav-cmd-hint {
+    display: block;
   }
 }

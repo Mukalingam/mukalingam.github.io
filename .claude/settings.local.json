@@ -8,7 +8,12 @@
       "Bash(node_modules/.bin/vite build:*)",
       "WebFetch(domain:medium.com)",
       "Bash(gh auth:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm ls:*)",
+      "Bash(node -e \"const gsap = require\\(''gsap''\\); console.log\\(Object.keys\\(gsap\\).filter\\(k => k.includes\\(''Scroll''\\) || k.includes\\(''Split''\\)\\)\\)\")",
+      "WebSearch",
+      "Read(//c/Users/Admin/Documents/Muka/ Docs/rajesh-portfolio-main/src/**)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

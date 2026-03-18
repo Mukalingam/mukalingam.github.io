@@ -42,6 +42,19 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 50px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.career-info-box:hover {
+  background: rgba(168, 85, 247, 0.04);
+  border-color: rgba(168, 85, 247, 0.15);
+  transform: translateY(-2px);
 }
 
 .career-info-box p {
@@ -189,7 +202,9 @@
   .career-info-box {
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 70px;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 14px;
   }
 
   .career-info-in,

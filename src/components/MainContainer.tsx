@@ -9,6 +9,10 @@ import Navbar from "./Navbar";
 import SocialIcons from "./SocialIcons";
 import WhatIDo from "./WhatIDo";
 import Work from "./Work";
+import ParticleNetwork from "./ParticleNetwork";
+import AIChatbot from "./AIChatbot";
+import CommandPalette from "./CommandPalette";
+import SoundToggle from "./SoundToggle";
 import setSplitText from "./utils/splitText";
 
 const TechStack = lazy(() => import("./TechStack"));
@@ -32,9 +36,13 @@ const MainContainer = ({ children }: PropsWithChildren) => {
 
   return (
     <div className="container-main">
+      <ParticleNetwork />
       <Cursor />
       <Navbar />
       <SocialIcons />
+      <CommandPalette />
+      <SoundToggle />
+      <AIChatbot />
       {isDesktopView && children}
       <div id="smooth-wrapper">
         <div id="smooth-content">

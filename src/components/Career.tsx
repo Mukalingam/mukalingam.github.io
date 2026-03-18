@@ -48,7 +48,7 @@ const Career = () => {
                 <h4>Lead AI Engineer</h4>
                 <h5>The Audience Street Inc.</h5>
               </div>
-              <h3>2023</h3>
+              <h3>2023–25</h3>
             </div>
             <p>
               Built Ninadata — an AI AdTech platform using LLMs and advanced NLP
@@ -63,7 +63,7 @@ const Career = () => {
                 <h4>Lead AI Engineer</h4>
                 <h5>LowCode Labs</h5>
               </div>
-              <h3>2024</h3>
+              <h3>2025</h3>
             </div>
             <p>
               Architected enterprise AI agent ecosystems serving 500+ users with
