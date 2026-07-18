@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (static export)
+      - name: Build
         run: npm run build
 
       - name: Setup Pages
@@ -39,7 +39,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./out"
+          path: "./dist"
 
   deploy:
     environment:
