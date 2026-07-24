@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large original photo (web-optimized copy muka-hd.jpg is tracked)
+public/muka-profil.JPG
