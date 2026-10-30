@@ -638,7 +638,8 @@
     #svc-scroll .svc-tag { min-height:84px !important; padding:0 4px !important; }
     #svc-scroll .svc-tag span { font-size:11px !important; line-height:1.15; }
     #svc-scroll .svc-tag span[style*="border-bottom"] { left:4px !important; }
-    .prj-tick, .prj-tick:hover { min-width:40px; min-height:40px; justify-content:center; padding:4px 6px 5px; background:#6f9df7; }
+    .prj-rail { gap:3px; flex-wrap:nowrap; }
+    .prj-tick, .prj-tick:hover { min-width:30px; min-height:40px; flex:1 1 0; justify-content:center; padding:4px 2px 5px; background:#6f9df7; }
     .prj-tick.on, .prj-tick.on:hover { background:#0a0a0a; }
     .prj-tick b .sc-interp, .voy-tick b .sc-interp { display:inline; }
     .voy-tick { min-width:44px; min-height:40px; justify-content:center; align-items:center; }
@@ -991,7 +992,7 @@
       </div>
       <div class="prj-rack" id="prj-rack" style="{{ prjRackStyle }}">
         <div class="prj-sheets" id="prj-sheets">
-          <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="7">
+          <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="10">
             <div class="prj-sheet" data-prj="{{ p.i }}" style="--c:{{ p.color }}; --rz:{{ p.rz }}deg;">
               <div class="prj-cap" aria-hidden="true"></div>
               <div class="prj-body">
@@ -1017,10 +1018,10 @@
       </div>
       <div class="prj-head" style="{{ prjHeadStyle }}">
         <h2 class="rv"><span class="wd"><span class="w"><span style="--l:0">P</span></span><span class="w"><span style="--l:1">R</span></span><span class="w"><span style="--l:2">O</span></span><span class="w"><span style="--l:3">J</span></span><span class="w"><span style="--l:4">E</span></span><span class="w"><span style="--l:5">C</span></span><span class="w"><span style="--l:6">T</span></span><span class="w"><span style="--l:7">S</span></span></span></h2>
-        <p class="sr">Seven production systems delivered for enterprise and government clients — ESG and carbon accounting, defence vision inspection, enterprise copilots, agentic trading, voice AI and ITSM. Scroll through each for its architecture and outcomes.</p>
+        <p class="sr">Ten production systems delivered for enterprise and government clients — ESG and carbon accounting, defence vision inspection, enterprise copilots, agentic trading, voice AI, ITSM, regulatory RAG and GenAI content platforms. Scroll through each for its architecture and outcomes.</p>
       </div>
       <div class="prj-rail" style="{{ prjRailStyle }}">
-        <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="7">
+        <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="10">
           <button type="button" class="prj-tick" data-prj-tick="{{ p.i }}"><b>{{ p.no }}</b><span>{{ p.short }}</span></button>
         </sc-for>
       </div>
@@ -2124,10 +2125,22 @@ class Component extends DCLogic {
         cat: 'Enterprise AI Training Platform', title: 'QConnect — Qatar Energy',
         desc: 'Video learning platform with AI generated quizzes, multilingual RAG Q&A over port management manuals and face presence monitoring — delivered with formal executive pilot handover.',
         stack: 'Next.js 14 · Fastify · FastAPI · pgvector · Claude API · LiveKit · DeepFace' },
+      { short: "Dr. Reddy's", color: '#ff8a3f',
+        cat: 'Regulatory RAG Platform', title: "Pharma Doc Intelligence — Dr. Reddy's",
+        desc: 'Document intelligence for regulatory and compliance docs — semantic chunking with grounded, citation backed answers across large pharma document sets.',
+        stack: 'FastAPI · Claude API · pgvector · LangChain' },
+      { short: 'Interview', color: '#3fd0e2',
+        cat: 'LLM Candidate Evaluation', title: 'AI Interview System',
+        desc: 'End to end interview platform with LLM based candidate evaluation, automated scheduling and a real time dashboard for scoring, sentiment analysis and competency mapping.',
+        stack: 'LLMs · FastAPI · React · PostgreSQL' },
+      { short: 'AdvertiseWith', color: '#9ee23f',
+        cat: 'GenAI Content Platform', title: 'AdvertiseWith AI',
+        desc: 'Prompt engineering framework delivering 40% better generated content quality, with intelligent model routing that picks the optimal AI model per content requirement.',
+        stack: 'GPT-4 · Claude · DALL-E · Prompt Engineering · Python' },
     ];
     const prjItems = prjRaw.map((p, i) => Object.assign({}, p, {
-      i, no: '0' + (i + 1),
-      rz: (Math.sin(i * 3.1) * 1.6).toFixed(2),
+      i, no: String(i + 1).padStart(2, '0'),
+      rz:(Math.sin(i * 3.1) * 1.6).toFixed(2),
     }));
     this._prj = { n: prjItems.length, lead: 0.62 };
     const prjRuleN = mobile ? 8 : 14;
