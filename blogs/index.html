@@ -44,6 +44,37 @@
   .loader .pct { font-size:64px; font-weight:300; }
   .loader .lbl { font-size:14px; letter-spacing:0.3em; text-transform:uppercase; opacity:0.55; }
   @media (max-width:720px){ .hint{ flex-wrap:wrap; justify-content:center; gap:8px 14px; max-width:92vw; } }
+
+  /* touch controls: stick + open button, only when body.touch */
+  .stick, .openbtn, .tapnote { display:none; }
+  .stick { position:fixed; left:22px; bottom:calc(30px + env(safe-area-inset-bottom)); width:128px; height:128px; z-index:12;
+    border-radius:50%; background:rgba(17,17,17,0.07); border:2px solid rgba(17,17,17,0.35); touch-action:none;
+    -webkit-user-select:none; user-select:none; }
+  .stick::before { content:''; position:absolute; inset:34px; border-radius:50%; border:2px dashed rgba(17,17,17,0.22); }
+  .knob { position:absolute; left:50%; top:50%; width:56px; height:56px; margin:-28px 0 0 -28px; border-radius:50%;
+    background:var(--ink); opacity:0.86; transition:transform .14s ease; will-change:transform; }
+  .openbtn { position:fixed; right:22px; bottom:calc(52px + env(safe-area-inset-bottom)); z-index:12; align-items:center; gap:8px;
+    font:600 17px 'Josefin Sans',Helvetica,Arial,sans-serif; letter-spacing:0.04em; color:#fff; background:var(--ink);
+    border:0; border-radius:30px; padding:15px 24px; opacity:0; transform:translateY(10px) scale(.96); pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease; box-shadow:0 6px 18px rgba(0,0,0,0.25); touch-action:manipulation; }
+  .openbtn.show { opacity:1; transform:none; pointer-events:auto; }
+  body.touch .stick { display:block; }
+  body.touch .openbtn { display:inline-flex; }
+  body.touch .hint.kb, body.touch .plabel .go { display:none; }
+  body.touch .tapnote { display:flex; }
+  .tapnote { position:fixed; left:50%; bottom:calc(172px + env(safe-area-inset-bottom)); transform:translateX(-50%); z-index:10; width:max-content; max-width:88vw;
+    text-align:center; font-size:14px; letter-spacing:0.04em; opacity:0.8; transition:opacity .6s; pointer-events:none; }
+  .tapnote.dim { opacity:0; }
+  @media (max-width:720px){
+    .brand { top:16px; left:18px; font-size:20px; }
+    .back { top:50px; left:18px; }
+    .back a { font-size:14px; padding:5px 13px; }
+    .nav { top:18px; right:18px; gap:18px; }
+    .nav a { font-size:15px; }
+    .plabel { top:92px; width:84vw; }
+    .plabel .see { font-size:18px; }
+    .plabel .t { font-size:14px; line-height:1.3; }
+  }
 </style>
 </head>
 <body>
@@ -52,7 +83,7 @@
     <div class="row back"><a href="../index.html"><span class="arw">←</span>Back</a></div>
     <div class="row nav"><a href="../index.html">Home</a><a href="#" class="cur">Blogs</a></div>
   </div>
-  <div class="hint" id="hint">
+  <div class="hint kb" id="hint">
     <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> to walk</span>
     <span>stand on a circle to view · <kbd>E</kbd> / click to open</span>
   </div>
@@ -61,6 +92,9 @@
     <div class="t" id="plabel-t">Title</div>
     <div class="go"><kbd>E</kbd> or click to open</div>
   </div>
+  <div class="tapnote" id="tapnote">drag the stick to walk · stand on a circle, then tap Open</div>
+  <div class="stick" id="stick" aria-label="Walk"><div class="knob" id="knob"></div></div>
+  <button class="openbtn" id="openbtn" type="button">Open <span aria-hidden="true">↗</span></button>
   <div class="loader" id="loader"><div class="pct" id="pct">0%</div><div class="lbl">entering the blogs</div></div>
 
 <script type="importmap">
@@ -116,8 +150,10 @@ const ROOM={ w:14, d:40, h:8 };
 const HALF_W=ROOM.w/2, HALF_D=ROOM.d/2;
 const BOUND={ x:HALF_W-2.0, z:HALF_D-1.6 };
 
+const touchUI = matchMedia('(pointer:coarse)').matches || innerWidth < 720;
+document.body.classList.toggle('touch', touchUI);
 const renderer=new THREE.WebGLRenderer({ antialias:true });
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, touchUI ? 1.5 : 2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
@@ -132,7 +168,7 @@ camera.position.set(0,4.5,HALF_D+5);
 scene.add(new THREE.HemisphereLight('#ffffff','#bcbcbc',1.0));
 scene.add(new THREE.AmbientLight('#ffffff',0.5));
 const key=new THREE.DirectionalLight('#ffffff',0.9);
-key.position.set(5,14,8); key.castShadow=true; key.shadow.mapSize.set(2048,2048);
+key.position.set(5,14,8); key.castShadow=true; key.shadow.mapSize.set(touchUI?1024:2048, touchUI?1024:2048);
 key.shadow.camera.near=1; key.shadow.camera.far=60; key.shadow.camera.left=-20; key.shadow.camera.right=20; key.shadow.camera.top=24; key.shadow.camera.bottom=-24;
 key.shadow.bias=-0.0004; key.shadow.radius=4; scene.add(key);
 
@@ -345,28 +381,54 @@ const keys={}; const MOVE={KeyW:'f',ArrowUp:'f',KeyS:'b',ArrowDown:'b',KeyA:'l',
 addEventListener('keydown',e=>{ if(MOVE[e.code]){keys[MOVE[e.code]]=true;e.preventDefault();dismissHint();} if(e.code==='KeyE'&&active)go(active); });
 addEventListener('keyup',e=>{ if(MOVE[e.code])keys[MOVE[e.code]]=false; });
 const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
-renderer.domElement.addEventListener('pointerdown',e=>{
+// virtual stick (touch): analog x/y in [-1,1], fed into the same movement code as the keys
+const stick={ x:0, y:0 }, stickEl=document.getElementById('stick'), knob=document.getElementById('knob');
+let stickId=null;
+function setStick(e){
+  const r=stickEl.getBoundingClientRect(), R=r.width/2-28;
+  let dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2); const l=Math.hypot(dx,dy);
+  if(l>R){ dx*=R/l; dy*=R/l; }
+  knob.style.transform='translate('+dx+'px,'+dy+'px)';
+  const m=Math.hypot(dx,dy)/R; stick.x=m<0.14?0:dx/R; stick.y=m<0.14?0:dy/R;
+}
+function endStick(e){ if(e.pointerId!==stickId) return; stickId=null; stick.x=stick.y=0; knob.style.transform=''; }
+stickEl.addEventListener('pointerdown',e=>{ stickId=e.pointerId; stickEl.setPointerCapture(stickId); knob.style.transition='none'; setStick(e); dismissHint(); e.preventDefault(); });
+stickEl.addEventListener('pointermove',e=>{ if(e.pointerId===stickId) setStick(e); });
+stickEl.addEventListener('pointerup',e=>{ knob.style.transition=''; endStick(e); });
+stickEl.addEventListener('pointercancel',e=>{ knob.style.transition=''; endStick(e); });
+const openBtn=document.getElementById('openbtn');
+openBtn.addEventListener('click',()=>{ if(active) go(active); });
+renderer.domElement.addEventListener('click',e=>{
   ptr.x=(e.clientX/innerWidth)*2-1; ptr.y=-(e.clientY/innerHeight)*2+1; ray.setFromCamera(ptr,camera);
   const hit=ray.intersectObjects(paintings.map(p=>p.mesh))[0];
   if(hit){ const p=paintings.find(p=>p.mesh===hit.object); if(p&&character.position.distanceTo(p.worldPos)<14) go(p); return; }
-  if(active) go(active);
+  if(active && !touchUI) go(active);
 });
 function go(p){ window.open(p.url,'_blank','noopener'); }
 
 const plabel=document.getElementById('plabel'), plabelT=document.getElementById('plabel-t');
-const hintEl=document.getElementById('hint'); let hintTimer=setTimeout(dismissHint,7000);
-function dismissHint(){ hintEl.classList.add('dim'); clearTimeout(hintTimer); }
+const hintEl=document.getElementById('hint'); let hintTimer=setTimeout(dismissHint,9000);
+const tapNote=document.getElementById('tapnote');
+function dismissHint(){ hintEl.classList.add('dim'); tapNote.classList.add('dim'); clearTimeout(hintTimer); }
 let active=null;
 
 // ---------- loop ----------
+// portrait screens see far less width: back the camera off so the framed painting (4 wide) still fits
+let camK=1, viewDist=6.2;
+function fitCamera(){
+  const a=innerWidth/innerHeight;
+  camK=Math.min(1.7,Math.max(1,0.95/a));
+  viewDist=Math.min(13.2,Math.max(6.2, 4.7/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*a)));
+}
+fitCamera();
 const vel=new THREE.Vector3(); const clock=new THREE.Clock(); let walkPhase=0;
 const camLookAt=new THREE.Vector3(0,1.2,HALF_D-8); const cp=new THREE.Vector3(), cl=new THREE.Vector3();
 const dist2D=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 
 function tick(){
   const dt=Math.min(clock.getDelta(),0.05), nowT=performance.now();
-  let ix=0,iz=0; if(keys.f)iz-=1; if(keys.b)iz+=1; if(keys.l)ix-=1; if(keys.r)ix+=1;
-  const inLen=Math.hypot(ix,iz), SPEED=6.0;
+  let ix=stick.x,iz=stick.y; if(keys.f)iz-=1; if(keys.b)iz+=1; if(keys.l)ix-=1; if(keys.r)ix+=1;
+  const inLen=Math.hypot(ix,iz), SPEED=6.0*Math.min(1,inLen);
   if(inLen>0){ ix/=inLen; iz/=inLen; vel.x+=(ix*SPEED-vel.x)*Math.min(1,dt*9); vel.z+=(iz*SPEED-vel.z)*Math.min(1,dt*9); }
   else { vel.x+=(0-vel.x)*Math.min(1,dt*11); vel.z+=(0-vel.z)*Math.min(1,dt*11); }
   character.position.x=THREE.MathUtils.clamp(character.position.x+vel.x*dt,-BOUND.x,BOUND.x);
@@ -395,17 +457,17 @@ function tick(){
   shadow.position.set(character.position.x,0.02,character.position.z); shadow.scale.setScalar(1-hop*1.4);
 
   // ---- camera: follow, OR swing to face the painting when on a circle ----
-  if(inSpot){ cp.set(inSpot.wx+inSpot.into*6.2, 2.6, inSpot.t); cl.copy(inSpot.center); }
-  else { cp.set(character.position.x*0.5, 3.2, character.position.z+7); cl.set(character.position.x*0.7, 0.81, character.position.z-1.5); }
+  if(inSpot){ cp.set(inSpot.wx+inSpot.into*viewDist, 2.6, inSpot.t); cl.copy(inSpot.center); }
+  else { cp.set(character.position.x*0.5, 3.2*camK, character.position.z+7*camK); cl.set(character.position.x*0.7, 0.81, character.position.z-1.5); }
   camera.position.lerp(cp, Math.min(1,dt*(inSpot?2.2:3)));
   camLookAt.lerp(cl, Math.min(1,dt*(inSpot?2.2:3))); camera.lookAt(camLookAt);
 
   // ---- prompt ----
-  if(inSpot!==active){ active=inSpot; if(active){ plabelT.textContent=active.title; plabel.classList.add('show'); } else plabel.classList.remove('show'); }
+  if(inSpot!==active){ active=inSpot; if(active){ plabelT.textContent=active.title; plabel.classList.add('show'); } else plabel.classList.remove('show'); openBtn.classList.toggle('show',!!active); }
 
   renderer.render(scene,camera); requestAnimationFrame(tick);
 }
-addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); fitCamera(); });
 
 let pct=0; const pctEl=document.getElementById('pct');
 const li=setInterval(()=>{ pct=Math.min(100,pct+Math.round(9+Math.random()*22)); pctEl.textContent=pct+'%'; if(pct>=100){ clearInterval(li); setTimeout(()=>document.getElementById('loader').classList.add('gone'),300);} },90);

@@ -165,7 +165,8 @@
   .blogs-head p { font-size:clamp(16px,2.2vw,21px); line-height:1.5; margin-top:16px; max-width:56ch; margin-inline:auto; }
   .portal { position:relative; display:flex; flex-direction:column; align-items:center; gap:26px;
     text-decoration:none; cursor:pointer; }
-  .door-frame { position:relative; width:min(268px,54vw); height:min(610px,74vh); }
+  .door-frame { --dw:min(300px, 66vw, calc((100vh - 250px) * 0.56)); --dw:min(300px, 66vw, calc((100svh - 250px) * 0.56));
+    position:relative; width:var(--dw); height:calc(var(--dw) / 0.56); margin-top:14px; }
   .ink { fill:none; stroke:#23252b; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; }
   .ink.thin { stroke-width:1.5; }
   .paper { fill:#fdfdfb; }
@@ -619,6 +620,33 @@
     .prj-tick:hover { background:transparent; }
     .prj-tick.on:hover { background:#0a0a0a; }
   }
+  button, a, .key { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  @media (max-width:999px){
+    #hero, #services, .aw-sec { min-height:100svh; }
+    .reveal { transform:translateY(22px); transition-duration:.6s; }
+    .reveal.in { transform:none; }
+    .sr { will-change:auto; filter:none; }
+    .rv.armed .w > span { filter:none; }
+    @keyframes letter-rise {
+      from { transform:translateY(112%) rotateX(-52deg); opacity:.2; }
+      to   { transform:none; opacity:1; }
+    }
+    #svc-scroll .svc-top { padding-left:22px !important; padding-right:22px !important; }
+    #svc-scroll .svc-mid { padding:22px 22px 24px !important; }
+    #svc-scroll .svc-bot { padding:14px 22px 20px !important; }
+    #svc-scroll .svc-tags { margin-top:26px !important; }
+    #svc-scroll .svc-tag { min-height:84px !important; padding:0 4px !important; }
+    #svc-scroll .svc-tag span { font-size:11px !important; line-height:1.15; }
+    #svc-scroll .svc-tag span[style*="border-bottom"] { left:4px !important; }
+    .prj-tick, .prj-tick:hover { min-width:40px; min-height:40px; justify-content:center; padding:4px 6px 5px; background:#6f9df7; }
+    .prj-tick.on, .prj-tick.on:hover { background:#0a0a0a; }
+    .prj-tick b .sc-interp, .voy-tick b .sc-interp { display:inline; }
+    .voy-tick { min-width:44px; min-height:40px; justify-content:center; align-items:center; }
+  }
+  @media (hover:none) and (pointer:coarse){
+    #svc-scroll { scroll-snap-type:x mandatory; overscroll-behavior-x:contain; }
+    #svc-scroll [data-card] { scroll-snap-align:center; scroll-snap-stop:always; }
+  }
 </style>
 </helmet>
 
@@ -712,7 +740,7 @@
       <p style="{{ introStyle }}">I'm a senior AI solution architect, which means I can take a project from a raw idea to a production grade, governed AI system. If you have something you'd like to build, then please <a href="#contact" style="text-decoration:underline; text-underline-offset:3px;">get in touch</a>.</p>
     </div>
     <div id="svc-scroll" style="{{ scrollerStyle }}">
-      <div style="position:relative; display:flex; gap:{{ gapPx }}; padding:0 44px; width:max-content;">
+      <div style="position:relative; display:flex; gap:{{ gapPx }}; padding:0 {{ padPx }}; width:max-content;">
         <svg width="{{ svgW }}" height="220" viewBox="0 0 {{ svgW }} 220" preserveAspectRatio="none" style="position:absolute; left:0; top:0; width:{{ svgW }}px; height:220px; z-index:8; pointer-events:none; overflow:visible;">
           <path d="{{ cablePath }}" fill="none" stroke="#1f1f1f" stroke-width="12" stroke-linecap="round"></path>
           <path d="{{ cablePath }}" fill="none" stroke="#3c3c3c" stroke-width="8" stroke-linecap="round"></path>
@@ -726,18 +754,18 @@
               <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:34px; height:34px; border-radius:50%; background:transparent; border:6px solid #101010; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.4);"></span>
               <span style="position:absolute; bottom:9px; left:0; right:0; text-align:center; font-size:10px; letter-spacing:0.06em; color:rgba(0,0,0,0.65); font-family:'Archivo',monospace;">{{ card.code }}</span>
             </div>
-            <div style="padding:164px 34px 14px; flex:0 0 auto;">
+            <div class="svc-top" style="padding:164px 34px 14px; flex:0 0 auto;">
               <div style="font-family:'Archivo Black',sans-serif; font-size:{{ wordSize }}; line-height:0.8; letter-spacing:-0.03em; color:{{ card.color }};">{{ card.abbr }}</div>
             </div>
-            <div style="position:relative; background:{{ card.panel }}; padding:24px 34px 26px; flex:1 0 auto;">
+            <div class="svc-mid" style="position:relative; background:{{ card.panel }}; padding:24px 34px 26px; flex:1 0 auto;">
               <div style="position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.22), rgba(0,0,0,0.14)); pointer-events:none;"></div>
               <div style="position:relative;">
                 <div style="font-weight:700; font-size:14px; letter-spacing:0.14em; color:rgba(0,0,0,0.7);">SERVICE</div>
                 <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:34px; letter-spacing:-0.01em; margin-top:6px; line-height:1.02;">{{ card.title }}</div>
-                <div style="position:relative; margin-top:34px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="svc-tags" style="position:relative; margin-top:34px; display:grid; grid-template-columns:repeat(4,1fr);">
                   <div style="position:absolute; left:0; right:0; top:50%; height:2px; background:#111;"></div>
                   <sc-for list="{{ card.tags }}" as="tag" hint-placeholder-count="4">
-                    <div style="position:relative; padding:0 6px; min-height:54px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start;">
+                    <div class="svc-tag" style="position:relative; padding:0 6px; min-height:54px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start;">
                       <span style="font-weight:700; font-size:13px; color:#111; margin-bottom:auto;">{{ tag.top }}</span>
                       <span style="position:absolute; top:50%; left:6px; transform:translateY(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:7px solid #111;"></span>
                       <span style="font-weight:700; font-size:13px; color:#111; margin-top:auto;">{{ tag.bottom }}</span>
@@ -746,7 +774,7 @@
                 </div>
               </div>
             </div>
-            <div style="background:#000; border-top:2px dashed #3a3a3a; padding:16px 34px 22px; overflow:hidden;">
+            <div class="svc-bot" style="background:#000; border-top:2px dashed #3a3a3a; padding:16px 34px 22px; overflow:hidden;">
               <div style="font-family:'Archivo Black',sans-serif; font-size:{{ wordSize }}; line-height:0.8; letter-spacing:-0.03em; color:transparent; -webkit-text-stroke:2px {{ card.color }};">{{ card.abbr }}</div>
             </div>
           </div>
@@ -756,8 +784,8 @@
   </section>
   <div id="about" style="position:relative; height:{{ aboutH }}; background:#6f9df7; border-top:3px solid #000;">
     <div id="about-wrap-inner" style="position:absolute; inset:0;">
-    <div id="about-stage" style="position:sticky; top:0; height:100svh; overflow:hidden; background:#6f9df7; perspective:900px; will-change:transform,opacity;">
-      <svg id="about-grid" sc-camel-view-box="0 0 1600 760" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; left:50%; top:47%; width:150vw; height:150vh; transform:translate(-50%,-50%) scale(1); transform-origin:center; will-change:transform,opacity; z-index:1;">
+    <div id="about-stage" style="position:sticky; top:0; height:100svh; overflow:hidden; background:#6f9df7; perspective:900px;"><div id="about-fade" aria-hidden="true" style="position:absolute; inset:0; background:#6f9df7; opacity:0; pointer-events:none; z-index:20;"></div>
+      <svg id="about-grid" sc-camel-view-box="0 0 1600 760" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; left:50%; top:47%; width:150vw; height:150vh; transform:translate(-50%,-50%) scale(1); transform-origin:center; z-index:1;">
         <rect x="0" y="0" width="1600" height="760" fill="#6f9df7"></rect>
         <sc-for list="{{ rings }}" as="r" hint-placeholder-count="11">
           <ellipse cx="800" cy="380" rx="{{ r.rx }}" ry="{{ r.ry }}" fill="none" stroke="#0a0a0a" stroke-width="1.6" opacity="0.9"></ellipse>
@@ -766,7 +794,7 @@
           <line x1="{{ s.x1 }}" y1="{{ s.y1 }}" x2="{{ s.x2 }}" y2="{{ s.y2 }}" stroke="#0a0a0a" stroke-width="1.6" opacity="0.9"></line>
         </sc-for>
       </svg>
-      <div id="about-cam" style="position:absolute; left:50%; top:47%; width:{{ camW }}; max-width:1200px; aspect-ratio:1200/720; transform:translate(-50%,-50%) scale(0.598); transform-origin:center; transform-style:preserve-3d; will-change:transform; z-index:2;">
+      <div id="about-cam" style="position:absolute; left:50%; top:47%; width:{{ camW }}; max-width:1200px; aspect-ratio:1200/720; transform:translate(-50%,-50%) scale(0.598); transform-origin:center; transform-style:preserve-3d; z-index:2;">
         <svg sc-camel-view-box="0 0 1200 720" style="position:absolute; inset:0; width:100%; height:100%; overflow:visible;">
           <defs>
             <pattern id="grass" width="120" height="720" sc-camel-pattern-units="userSpaceOnUse">
@@ -963,7 +991,7 @@
       </div>
       <div class="prj-rack" id="prj-rack" style="{{ prjRackStyle }}">
         <div class="prj-sheets" id="prj-sheets">
-          <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="8">
+          <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="7">
             <div class="prj-sheet" data-prj="{{ p.i }}" style="--c:{{ p.color }}; --rz:{{ p.rz }}deg;">
               <div class="prj-cap" aria-hidden="true"></div>
               <div class="prj-body">
@@ -989,10 +1017,10 @@
       </div>
       <div class="prj-head" style="{{ prjHeadStyle }}">
         <h2 class="rv"><span class="wd"><span class="w"><span style="--l:0">P</span></span><span class="w"><span style="--l:1">R</span></span><span class="w"><span style="--l:2">O</span></span><span class="w"><span style="--l:3">J</span></span><span class="w"><span style="--l:4">E</span></span><span class="w"><span style="--l:5">C</span></span><span class="w"><span style="--l:6">T</span></span><span class="w"><span style="--l:7">S</span></span></span></h2>
-        <p class="sr">Eight production systems delivered for enterprise and government clients — real time computer vision, regulatory RAG, conversational AI and GenAI content platforms. Scroll through each for its architecture and outcomes.</p>
+        <p class="sr">Seven production systems delivered for enterprise and government clients — ESG and carbon accounting, defence vision inspection, enterprise copilots, agentic trading, voice AI and ITSM. Scroll through each for its architecture and outcomes.</p>
       </div>
       <div class="prj-rail" style="{{ prjRailStyle }}">
-        <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="8">
+        <sc-for list="{{ prjItems }}" as="p" hint-placeholder-count="7">
           <button type="button" class="prj-tick" data-prj-tick="{{ p.i }}"><b>{{ p.no }}</b><span>{{ p.short }}</span></button>
         </sc-for>
       </div>
@@ -1215,7 +1243,7 @@ class Component extends DCLogic {
 
     let down = false, sx = 0, sl = 0, moved = false;
     const inScroller = (t) => { const sc = document.getElementById('svc-scroll'); return sc && sc.contains(t) ? sc : null; };
-    this._pd = (e) => { const sc = inScroller(e.target); if (!sc) return; down = true; moved = false; sx = e.clientX; sl = sc.scrollLeft; sc.style.cursor = 'grabbing'; };
+    this._pd = (e) => { if (e.pointerType === 'touch') return; const sc = inScroller(e.target); if (!sc) return; down = true; moved = false; sx = e.clientX; sl = sc.scrollLeft; sc.style.cursor = 'grabbing'; };
     this._pm = (e) => { if (!down) return; const sc = document.getElementById('svc-scroll'); if (!sc) return; const dx = e.clientX - sx; if (Math.abs(dx) > 3) moved = true; sc.scrollLeft = sl - dx; };
     this._pu = () => { down = false; const sc = document.getElementById('svc-scroll'); if (sc) sc.style.cursor = 'grab'; };
     this._pc = (e) => { if (moved && inScroller(e.target)) { e.preventDefault(); e.stopPropagation(); } };
@@ -1610,7 +1638,7 @@ class Component extends DCLogic {
     };
 
     const IDS = ['svc-scroll', 'about', 'about-grid', 'about-cam', 'about-stands',
-                 'about-panel', 'play', 'about-stage', 'piano', 'awards', 'aw-canvas',
+                 'about-panel', 'play', 'about-fade', 'piano', 'awards', 'aw-canvas',
                  'voyage', 'voy-world', 'projects', 'prj-sheets'];
     let nodesDirty = true, srNodes = [], revealNodes = [], rvNodes = [], els = {};
     let awCards = [], awDots = [];
@@ -1710,8 +1738,8 @@ class Component extends DCLogic {
         for (const key in t) cur[key] += (t[key] - cur[key]) * k;
       }
 
-      const playSec = els['play'], stage = els['about-stage'], piano = els['piano'];
-      let qStr = null, litNow = false, stageOp = null, stageTr = null;
+      const playSec = els['play'], stage = els['about-fade'], piano = els['piano'];
+      let qStr = null, litNow = false, stageOp = null;
       if (playSec) {
         const top = playSec.getBoundingClientRect().top;
         const q = smooth(clamp((VH - top) / (VH * 0.9), 0, 1));
@@ -1724,8 +1752,7 @@ class Component extends DCLogic {
         if (nextSec) {
           const q = smooth(clamp((VH - nextSec.getBoundingClientRect().top) / (VH * 0.9), 0, 1));
           const f = smooth(clamp((q - 0.35) / 0.55, 0, 1));
-          stageOp = (1 - f * 0.92).toFixed(3);
-          stageTr = 'scale(' + (1 - f * 0.12).toFixed(4) + ') translateY(' + (-f * 6).toFixed(2) + 'vh)';
+          stageOp = (Math.round(f * 0.92 * 100) / 100).toFixed(2);
         }
       }
 
@@ -1827,7 +1854,7 @@ class Component extends DCLogic {
 
       if (piano && qStr !== null) put(piano, '--q', qStr);
       if (litNow) piano.classList.add('lit');
-      if (stage && stageOp !== null) { put(stage, 'opacity', stageOp); put(stage, 'transform', stageTr); }
+      if (stage && stageOp !== null) put(stage, 'opacity', stageOp);
 
       if (awNear) this._awTick(dt, k, awW, awH, awCards, awDots);
 
@@ -1919,11 +1946,13 @@ class Component extends DCLogic {
         { top: 'FastAPI', bottom: 'Django' }, { top: 'React', bottom: 'Next.js' },
         { top: 'Node.js', bottom: 'TypeScript' }, { top: 'PostgreSQL', bottom: 'Redis' } ] },
     ];
-    const cwNum = mobile ? Math.round(Math.min(w * 0.86, 360)) : 680;
-    const gapNum = mobile ? 44 : 72;
+    const cwNum = mobile ? Math.round(Math.min(w * 0.84, 360)) : 680;
+    const gapNum = mobile ? 14 : 72;
+    const padNum = mobile ? Math.max(0, Math.round((w - cwNum) / 2)) : 44;
+    const padPx = padNum + 'px';
     const fracs = cards.map(() => 0.5);
     cards.forEach((c, i) => { c.hookCenter = Math.round(fracs[i] * cwNum); c.hookLeft = (c.hookCenter - 48) + 'px'; });
-    const hookY = 100, sag = 32, padL = 44, padR = 44;
+    const hookY = 100, sag = 32, padL = padNum, padR = padNum;
     const svgW = padL + cards.length * cwNum + (cards.length - 1) * gapNum + padR;
     const hookXs = cards.map((c, i) => padL + i * (cwNum + gapNum) + c.hookCenter);
     let d = 'M 0 ' + hookY; let prev = 0;
@@ -1939,7 +1968,7 @@ class Component extends DCLogic {
     const cardW = cwNum + 'px';
     const gapPx = gapNum + 'px';
     const wordSize = mobile ? '104px' : '150px';
-    const scrollerStyle = 'position:relative; z-index:2; flex:0 0 auto; overflow-x:auto; overflow-y:hidden; cursor:grab; user-select:none; -webkit-user-select:none; touch-action:pan-y; padding-top:46px; padding-bottom:70px;';
+    const scrollerStyle = 'position:relative; z-index:2; flex:0 0 auto; overflow-x:auto; overflow-y:hidden; cursor:grab; user-select:none; -webkit-user-select:none; touch-action:' + (mobile ? 'pan-x pan-y' : 'pan-y') + '; padding-top:46px; padding-bottom:70px;';
 
     const awards = [
       { i: 0, short: 'Star of the Month', code: 'ACH-01', year: '2022', css: '#f2ce29', emblem: 'star',
@@ -2067,38 +2096,34 @@ class Component extends DCLogic {
       : 'left:44px; bottom:44px; width:min(470px,40vw);';
 
     const prjRaw = [
+      { short: 'VeroPath', color: '#9ee23f',
+        cat: 'ESG & Carbon Accounting SaaS · Australia, UAE', title: 'VeroPath',
+        desc: 'Multi tenant ESG reporting and carbon accounting platform — GHG Protocol emissions engine, Scope 1/2/3, supplier portal and climate risk, with Gemini powered Ask Vera. Led a 9 member team from discovery to production ready.',
+        stack: 'Fastify · TypeScript · Next.js · Supabase · Azure · Gemini · Playwright' },
+      { short: 'FastenIQ', color: '#3fd0e2',
+        cat: 'Bharat Electronics Ltd. · Defence', title: 'FastenIQ — BEL',
+        desc: 'AI inspection app for BEL Seeker equipment — inspectors capture components on device and a transformer vision model verifies bolts, connectors and assemblies against predefined checkpoints, then generates the report instantly. Delivered on premises.',
+        stack: 'RF-DETR · PyTorch · OpenCV · Roboflow · FastAPI · On prem GPU' },
+      { short: 'Microsoft', color: '#f2ce29',
+        cat: 'Enterprise Copilot (Confidential)', title: 'Enterprise AI Copilot — Microsoft',
+        desc: 'Teams embedded assistant that manages Azure DevOps work items, auto generates test cases and answers from an integrated knowledge base — cutting manual ADO overhead and speeding up sprint planning.',
+        stack: 'Azure OpenAI · Azure DevOps API · MCP · LangGraph · RAG · MS Teams' },
+      { short: 'Nexus Trade', color: '#ff8a3f',
+        cat: 'Multi Agent Trading Platform · BFSI', title: 'Nexus Trade',
+        desc: 'Orchestrated AI agents execute trades under layered security — authenticated broker integrations, approval gates on every execution and full audit logging. Feature complete, in testing.',
+        stack: 'Multi Agent Orchestration · FastAPI · React · PostgreSQL' },
       { short: 'iVaak', color: '#f0503f',
         cat: 'Multi Tenant Voice AI SaaS · Live', title: 'iVaak AI',
         desc: 'Production B2B voice platform — isolated per tenant state machines, vector knowledge bases and custom escalation policies at sub 800ms latency. Live with active enterprise clients.',
         stack: 'LangGraph · ElevenLabs · Whisper · Twilio · Redis · pgvector' },
-      { short: 'BEL', color: '#3fd0e2',
-        cat: 'Bharat Electronics Ltd. · Real time CV', title: 'Industrial Inspection — BEL',
-        desc: 'Real time vision inspection detecting bolts, connectors and assembly components straight from production line camera feeds — transformer based detection with automated defect alerts.',
-        stack: 'RF-DETR · Roboflow · PyTorch · OpenCV · FastAPI' },
-      { short: 'Microsoft', color: '#f2ce29',
-        cat: 'Enterprise Copilot (Confidential)', title: 'Enterprise AI Copilot — Microsoft',
-        desc: 'Teams embedded copilot that creates and manages ADO work items, auto generates test cases, submits pipeline jobs and answers from an integrated knowledge base.',
-        stack: 'Azure OpenAI · Azure DevOps API · LangGraph · RAG · MS Teams' },
-      { short: 'TruFix', color: '#9ee23f',
+      { short: 'TruFix', color: '#b28cff',
         cat: 'Autonomous ITSM Platform', title: 'TruFix AI',
-        desc: 'AI native layer above Freshdesk and Zendesk — agents own the full ticket lifecycle with confidence threshold human routing. 35% MTTR reduction in pilots.',
+        desc: 'AI native layer above Freshdesk and Zendesk — agents own the full ticket lifecycle with confidence threshold human routing and evaluation gated releases. 35% MTTR reduction in pilots.',
         stack: 'LangGraph · Claude API · FastAPI · Langfuse · PostgreSQL' },
-      { short: 'QConnect', color: '#b28cff',
+      { short: 'QConnect', color: '#3fd0e2',
         cat: 'Enterprise AI Training Platform', title: 'QConnect — Qatar Energy',
         desc: 'Video learning platform with AI generated quizzes, multilingual RAG Q&A over port management manuals and face presence monitoring — delivered with formal executive pilot handover.',
-        stack: 'Next.js 14 · Fastify · FastAPI · pgvector · LiveKit · DeepFace' },
-      { short: "Dr. Reddy's", color: '#ff8a3f',
-        cat: 'Regulatory RAG Platform', title: "Pharma Doc Intelligence — Dr. Reddy's",
-        desc: 'Document intelligence for regulatory and compliance docs — semantic chunking with grounded, citation backed answers across large pharma document sets.',
-        stack: 'FastAPI · Claude API · pgvector · LangChain' },
-      { short: 'Interview', color: '#3fd0e2',
-        cat: 'LLM Candidate Evaluation', title: 'AI Interview System',
-        desc: 'End to end interview platform with LLM based candidate evaluation, automated scheduling and a real time dashboard for scoring, sentiment analysis and competency mapping.',
-        stack: 'LLMs · FastAPI · React · PostgreSQL' },
-      { short: 'AdvertiseWith', color: '#9ee23f',
-        cat: 'GenAI Content Platform', title: 'AdvertiseWith AI',
-        desc: 'Prompt engineering framework delivering 40% better generated content quality, with intelligent model routing that picks the optimal AI model per content requirement.',
-        stack: 'GPT-4 · Claude · DALL-E · Prompt Engineering · Python' },
+        stack: 'Next.js 14 · Fastify · FastAPI · pgvector · Claude API · LiveKit · DeepFace' },
     ];
     const prjItems = prjRaw.map((p, i) => Object.assign({}, p, {
       i, no: '0' + (i + 1),
@@ -2142,7 +2167,7 @@ class Component extends DCLogic {
       voyHeadStyle, voyRailStyle, voyCardsStyle,
       navPad, navStyle, navLinksStyle, hamburgerStyle, mobileMenuStyle,
       heroMinH, heroPadTop, imgStyle, textColStyle, headingStyle, introBoxStyle, introTextStyle,
-      cards, headerStyle, servicesTitleStyle, introStyle, cardW, gapPx, wordSize, scrollerStyle, cablePath: d, svgW,
+      cards, headerStyle, servicesTitleStyle, introStyle, cardW, gapPx, padPx, wordSize, scrollerStyle, cablePath: d, svgW,
       awards,
       rings, spokes, panelPadTop, cardStyle, aboutH, camW,
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
